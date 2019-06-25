@@ -6,7 +6,7 @@ This will serve as the resting place of the Python Evolv Experiment SDK.
 Supported Python Versions
 -------------------------
 
-The Evolv SDK is only compatible with Python 3.
+The Evolv SDK is only compatible with Python 3.7 or above.
 
 Installing
 ----------
