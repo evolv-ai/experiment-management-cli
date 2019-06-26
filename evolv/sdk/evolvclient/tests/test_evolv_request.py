@@ -241,7 +241,7 @@ class TestEvolvRequest(unittest.TestCase):
         self.assertEqual(EvolvRequest.json_response(response), [{'test': 1}, {'test': 2}])
 
         response = MockResponse({'_name': 'Sample'}, headers={'Content-Type': 'application/yaml'})
-        self.assertEqual(EvolvRequest.json_response(response), {'response_yaml': True, 'content': '{_name: Sample}\n'})
+        self.assertEqual(EvolvRequest.json_response(response), {'response_yaml': True, 'content': '_name: Sample\n'})
 
 
 if __name__ == '__main__':
