@@ -1,9 +1,11 @@
-import os, os.path
-import errno
+import os
+import tempfile
 import requests
 import base64
 import time
 import json
+import fnmatch
+
 from pathlib import Path
 
 import click
@@ -445,33 +447,33 @@ def _confirm_account():
 
 def _user_has_auth():
     try:
-        f = open(EVOLV_AUTH_FILE, 'r')
+        cred_files = _find_creds_files('*evolv-creds', tempfile.gettempdir())
+        f = open(cred_files[0], 'r')
         data = json.load(f)
         expiry = data['expires_at']
         if expiry < time.time():
             return False
         return True
-    except Exception as e:
+    except Exception:
         return False
 
 
 def _create_json_auth_file(file_contents):
+    old_cred_files = _find_creds_files('*evolv-creds', tempfile.gettempdir())
+    for file in old_cred_files:
+        os.remove(file)
 
-    def mkdir_p(path):
-        try:
-            os.makedirs(path)
-        except OSError as exc: # Python >2.5
-            if exc.errno == errno.EEXIST and os.path.isdir(path):
-                pass
-            else:
-                raise
+    temp = tempfile.NamedTemporaryFile(suffix='evolv-creds', delete=False)
+    temp.write(json.dumps(file_contents).encode())
 
-    def safe_open_w(path):
-        mkdir_p(os.path.dirname(path))
-        return open(path, 'w')
 
-    with safe_open_w(EVOLV_AUTH_FILE) as f:
-        json.dump(file_contents, f)
+def _find_creds_files(pattern, path):
+    result = []
+    for root, dirs, files in os.walk(path):
+        for name in files:
+            if fnmatch.fnmatch(name, pattern):
+                result.append(os.path.join(root, name))
+    return result
 
 
 def _set_user_token(domain, username, password):
