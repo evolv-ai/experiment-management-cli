@@ -1,4 +1,9 @@
-# experiment-management-cli
+Evolv CLI
+====================================
+
+[![image](https://img.shields.io/pypi/v/evolv.svg)](https://pypi.org/project/evolv/)
+[![image](https://img.shields.io/pypi/l/evolv.svg)](https://pypi.org/project/evolv/)
+[![image](https://img.shields.io/pypi/pyversions/evolv.svg)](https://pypi.org/project/evolv/)
 
 The experiment management CLI provides functionality to create and maintain Evolv experiments.
 
@@ -10,7 +15,7 @@ Pre-requisites: You must have Python 3.7 or above installed on your computer.
     ```bash
     python3 -m venv .venv
     source .venv/bin/activate
-    pip install --editable .
+    pip install evolv
     ```
     
 2. Ensure the CLI is properly installed by calling the cli. You must be in the virtual environment
@@ -38,8 +43,7 @@ To start using the CLI obtain your account id from Evolv staff.
     
 3. The system will prompt you to enter your Evolv email and password.
 
-4. Once logged in you will not have to login again till your credentials expire
-   or you close your terminal.
+4. Once logged in you will not have to login again till your credentials expire.
 
 ## Other Commands
 
