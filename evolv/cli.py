@@ -8,8 +8,8 @@ from pathlib import Path
 
 import click
 
-from experiments.sdk.evolvclient.config import EvolvConfig
-from experiments.sdk.evolvclient.client import EvolvClient
+from evolv.sdk.evolvclient.config import EvolvConfig
+from evolv.sdk.evolvclient.client import EvolvClient
 
 
 APPLICATION_JSON = 'application/json'
