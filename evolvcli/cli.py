@@ -10,14 +10,13 @@ from pathlib import Path
 
 import click
 
-from evolv.sdk.evolvclient.config import EvolvConfig
-from evolv.sdk.evolvclient.client import EvolvClient
+from evolvcli.sdk.evolvclient.config import EvolvConfig
+from evolvcli.sdk.evolvclient.client import EvolvClient
 
 
 APPLICATION_JSON = 'application/json'
 APPLICATION_YAML = 'application/yaml'
 
-EVOLV_AUTH_FILE = '/tmp/.evolv/auth.json'
 EVOLV_ACCOUNT_ID = ''
 EVOLV_CONFIG = None
 
@@ -50,7 +49,7 @@ def cli(domain, account_id, api_key, login):
     if api_key:
         EVOLV_CONFIG = EvolvConfig(domain, api_key=api_key)
     else:
-        with open(EVOLV_AUTH_FILE) as auth_file:
+        with open(_find_creds_files('*evolv-creds', tempfile.gettempdir())[0]) as auth_file:
             auth = json.load(auth_file)
             EVOLV_CONFIG = EvolvConfig(domain, bearer_token=auth['access_token'])
 

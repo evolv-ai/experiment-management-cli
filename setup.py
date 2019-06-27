@@ -1,10 +1,10 @@
 from setuptools import setup, find_packages
 
-with open('README.md', 'r', 'utf-8') as f:
+with open('README.md', 'r') as f:
     readme = f.read()
 
 setup(
-    name='evolv',
+    name='evolvcli',
     version='1.0.0',
     packages=find_packages(),
     include_package_data=True,
@@ -31,6 +31,6 @@ setup(
     ],
     entry_points='''
         [console_scripts]
-        evolv=evolv.cli:cli
+        evolv=evolvcli.cli:cli
     ''',
 )
