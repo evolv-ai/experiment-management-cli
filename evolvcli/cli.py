@@ -487,8 +487,8 @@ def _set_user_token(domain, username, password):
         token_response = response.json()
         token_response['expires_at'] = token_response['expires_in'] + time.time()
         _create_json_auth_file(token_response)
-    except Exception as e:
-        raise Exception("Response to login user failed.")
+    except Exception:
+        click.secho('Attempt to login failed -- you may have entered your email or password wrong.')
 
 
 if __name__ == '__main__':
