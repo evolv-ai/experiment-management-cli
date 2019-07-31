@@ -1,4 +1,5 @@
 import os
+import sys
 import tempfile
 import requests
 import base64
@@ -22,7 +23,7 @@ EVOLV_CONFIG = None
 
 
 @click.group()
-@click.option('-s', '--domain', default='experiments.evolv.ai', envvar='EVOLV_DOMAIN',
+@click.option('-d', '--domain', default='experiments.evolv.ai', envvar='EVOLV_DOMAIN',
               help='Evolv domain where experiments api lives')
 @click.option('-a', '--account-id', default=None, envvar='EVOLV_ACCOUNT_ID', show_default=True,
               help='The account id of the Evolv account being interacted with')
@@ -40,7 +41,11 @@ def cli(domain, account_id, api_key, login):
     if (login or not _user_has_auth()) and not api_key:
         username = click.prompt("Please enter your Evolv email", type=str)
         password = click.prompt("Please enter your Evolv password", type=str, hide_input=True)
-        _set_user_token(domain, username, password)
+        try:
+            _set_user_token(domain, username, password)
+        except LoginError:
+            click.secho('Attempt to login failed -- you may have entered your email or password wrong.')
+            sys.exit(1)
 
     EVOLV_ACCOUNT_ID = account_id
     if not EVOLV_ACCOUNT_ID:
@@ -204,9 +209,7 @@ def create_account(name):
 @click.argument('file', type=click.File('rb'), default='metamodel.yml')
 def create_metamodel(name, file):
     """ Create a new Metamodel """
-    if not _confirm_account():
-        return
-
+    _confirm_account()
     response = EvolvClient(EVOLV_CONFIG).create_metamodel(name, yaml=file.read().decode('utf-8'),
                                                           account_id=EVOLV_ACCOUNT_ID)
     _print_dict(response)
@@ -218,8 +221,7 @@ def create_metamodel(name, file):
 @click.option('-p', '--protected', default=False, is_flag=True, help='Print verbose logging')
 def create_environment(name, config, protected):
     """ Create a new Environment """
-    if not _confirm_account():
-        return
+    _confirm_account()
 
     content = None
     content_type = None
@@ -282,9 +284,7 @@ def create_experiment(
         audience_query_file,
         config):
     """ Create an Experiment """
-
-    if not _confirm_account():
-        return
+    _confirm_account()
 
     evolv_client = EvolvClient(EVOLV_CONFIG)
     if not metamodel_version:
@@ -330,9 +330,7 @@ def create_experiment(
               help='The probability that the candidate will be allocated.')
 def create_candidate(metamodel_id, metamodel_version, environment_id, experiment_id, file, allocation_probability):
     """ Create a candidate. """
-
-    if not _confirm_account():
-        return
+    _confirm_account()
 
     with open(file, 'r') as json_data:
         genome = json_data.read()
@@ -356,8 +354,7 @@ def update():
 @click.argument('file', type=click.File('rb'), default='metamodel.yml')
 def update_metamodel(metamodel_id, file):
     """ Update the content of an existing Metamodel """
-    if not _confirm_account():
-        return
+    _confirm_account()
 
     evolv_client = EvolvClient(EVOLV_CONFIG)
     metamodel = evolv_client.get_metamodel(metamodel_id, account_id=EVOLV_ACCOUNT_ID)
@@ -376,8 +373,7 @@ def update_metamodel(metamodel_id, file):
 @click.argument('file', type=click.File('rb'), default='environment.yml')
 def update_environment(environment_id, file):
     """ Update the content of an existing Environment """
-    if not _confirm_account():
-        return
+    _confirm_account()
 
     evolv_client = EvolvClient(EVOLV_CONFIG)
     environment = evolv_client.get_environment(environment_id, account_id=EVOLV_ACCOUNT_ID)
@@ -399,8 +395,7 @@ def update_environment(environment_id, file):
 @click.option('-ar', '--abort-reason', help='Reason for stopping the experiment.', default=None)
 def update_experiment(experiment_id, metamodel_id, abort, abort_reason):
     """ Update an existing Experiment """
-    if not _confirm_account():
-        return
+    _confirm_account()
 
     response = EvolvClient(EVOLV_CONFIG).update_experiment(experiment_id=experiment_id, abort=abort,
                                                            abort_reason=abort_reason,
@@ -438,10 +433,10 @@ def _print_list_of_dicts(l):
 
 
 def _confirm_account():
-    if not click.confirm('You are currently set to interact with account: {},'
-                         ' do you want to continue?'.format(EVOLV_ACCOUNT_ID)):
-        return False
-    return True
+    account = EvolvClient(EVOLV_CONFIG).get_account(EVOLV_ACCOUNT_ID)
+    if not click.confirm('You are currently set to interact with {} (id: {}),'
+                         ' do you want to continue?'.format(account['name'], account['id'])):
+        sys.exit(0)
 
 
 def _user_has_auth():
@@ -488,7 +483,11 @@ def _set_user_token(domain, username, password):
         token_response['expires_at'] = token_response['expires_in'] + time.time()
         _create_json_auth_file(token_response)
     except Exception:
-        click.secho('Attempt to login failed -- you may have entered your email or password wrong.')
+        raise LoginError()
+
+
+class LoginError(Exception):
+    pass
 
 
 if __name__ == '__main__':
