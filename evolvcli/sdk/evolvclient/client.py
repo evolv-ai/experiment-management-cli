@@ -113,7 +113,11 @@ class EvolvClient:
         :return: a list of environments
         :rtype: json
         """
-        environments = self._requester.query(ENVIRONMENTS, query, account_id=account_id)
+        querystring = {}
+        if query:
+            querystring['query'] = query
+
+        environments = self._requester.query(ENVIRONMENTS, query=querystring, account_id=account_id)
         return environments
 
     def list_metamodels(self, account_id, query=None):
@@ -124,19 +128,31 @@ class EvolvClient:
         :return: a list of metamodels
         :rtype: json
         """
-        metamodels = self._requester.query(METAMODELS, query, account_id=account_id)
+        querystring = {}
+        if query:
+            querystring['query'] = query
+
+        metamodels = self._requester.query(METAMODELS, query=querystring, account_id=account_id)
         return metamodels
 
-    def list_experiments(self, account_id, metamodel_id, query=None):
+    def list_experiments(self, account_id, metamodel_id, query=None, statuses=None):
         """Retrieves a list of experiments for the configured account.
 
         :param string account_id: id of the account the experiments exist in
         :param string metamodel_id: id of the metamodel the experiments exist in
         :param string query: experiment api query
+        :param string statuses: comma seperated list of statuses to filter upon
         :return: a list of experiments
         :rtype: json
         """
-        experiments = self._requester.query(EXPERIMENTS, query, account_id=account_id, metamodel_id=metamodel_id)
+        querystring = {}
+        if query:
+            querystring['query'] = query
+        if statuses:
+            querystring['statuses'] = statuses
+
+        experiments = self._requester.query(EXPERIMENTS, query=querystring, account_id=account_id,
+                                            metamodel_id=metamodel_id)
         return experiments
 
     def list_candidates(self, account_id, metamodel_id, experiment_id, query=None):
@@ -149,7 +165,11 @@ class EvolvClient:
         :return: list of candidates
         :rtype: json
         """
-        return self._requester.query(CANDIDATES, query, account_id=account_id, metamodel_id=metamodel_id,
+        querystring = {}
+        if query:
+            querystring['query'] = query
+
+        return self._requester.query(CANDIDATES, query=querystring, account_id=account_id, metamodel_id=metamodel_id,
                                      experiment_id=experiment_id)
 
     def create_account(self, name):

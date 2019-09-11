@@ -5,7 +5,7 @@ with open('README.md', 'r') as f:
 
 setup(
     name='evolvcli',
-    version='1.0.2',
+    version='1.0.3',
     packages=find_packages(),
     include_package_data=True,
     license='Apache License 2.0',

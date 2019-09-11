@@ -11,7 +11,7 @@ The experiment management CLI provides functionality to create and maintain Evol
 
 Pre-requisites: You must have Python 3.7 installed on your computer.
 
-1. Create a Python vitual environment and install the cli.
+1. Create a Python virtual environment and install the cli.
     ```bash
     python3 -m venv .venv
     source .venv/bin/activate
@@ -59,3 +59,40 @@ evolv list
 evolv create
 evolv update
 ```
+
+## Developing
+
+When developing theres some key things to know. 
+
+### Setup
+
+1. Create a Python virtual environment and install the cli.
+    ```bash
+    python3 -m venv .venv
+    source .venv/bin/activate
+    pip install -r requirements.txt
+    pip install -r requirements-dev.txt
+    python setup.py develop
+    ```
+    
+2. Ensure the CLI is properly installed by calling the cli. You must be in the virtual environment
+   you created to use the cli. 
+    ```bash
+    evolv
+    ```
+    You should see a help menu appear in your terminal.
+    
+### Uploading to PyPi
+
+Make sure you are at the project root for these steps.
+
+1. Update the version of the package found in: [./setup.py] (Make sure to check this in.)
+
+2. Enter your virtual environment and upload the package.
+    ```bash
+    source .venv/bin/activate
+    python setup.py sdist
+    twine upload dist/evolvcli-<version>.tar.gz
+    ```
+ 
+3. Twine will prompt you for credentials, get these from the Evolv Engineering Team.
