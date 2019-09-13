@@ -168,10 +168,11 @@ def list_metamodels(query=None):
 @list_all.command('experiments')
 @click.argument('metamodel-id', type=str)
 @click.option('--query', help='A graph query to use for filtering results')
-def list_experiments(metamodel_id, query=None):
+@click.option('--statuses', help='A comma seperated list of statuses to filter upon')
+def list_experiments(metamodel_id, query=None, statuses=None):
     """ List Experiments """
     response = EvolvClient(EVOLV_CONFIG).list_experiments(account_id=EVOLV_ACCOUNT_ID, metamodel_id=metamodel_id,
-                                                          query=query)
+                                                          query=query, statuses=statuses)
     _print_list_of_dicts(response)
 
 

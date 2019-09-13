@@ -115,7 +115,7 @@ class EvolvRequest:
         """Performs a get request with query params attached.
 
         :param string collection: the entity being requested
-        :param string query: query for the underlying graph database
+        :param dict query: querystring parameters
         :param string account_id: unique identifier for an account
         :param string metamodel_id: unique identifier for an metamodel
         :param string experiment_id: unique identifier for an experiment
@@ -123,8 +123,9 @@ class EvolvRequest:
         :rtype: list
         """
         if query:
-            request_url = self.request_path(collection, query={'query': query}, account_id=account_id,
-                                            metamodel_id=metamodel_id, experiment_id=experiment_id)
+            request_url = self.request_path(collection, query=query,
+                                            account_id=account_id, metamodel_id=metamodel_id,
+                                            experiment_id=experiment_id)
         else:
             request_url = self.request_path(collection, account_id=account_id, metamodel_id=metamodel_id,
                                             experiment_id=experiment_id)
