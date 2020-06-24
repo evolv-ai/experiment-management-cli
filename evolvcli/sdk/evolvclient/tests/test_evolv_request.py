@@ -101,10 +101,11 @@ class TestEvolvRequest(unittest.TestCase):
 
         path = requester.request_path(METAMODELS, entity_id=self.METAMODEL_ID, account_id=self.ACCOUNT_ID,
                                       content_only=True)
-        self.assertEqual(path, 'https://{}/{}/accounts/{}/metamodels/{}/content'.format(self.API_DOMAIN,
-                                                                                        self.API_VERSION,
-                                                                                        self.ACCOUNT_ID,
-                                                                                        self.METAMODEL_ID))
+        self.assertEqual(path, 'https://{}/{}/accounts/{}/metamodels/{}{}'.format(self.API_DOMAIN,
+                                                                               self.API_VERSION,
+                                                                               self.ACCOUNT_ID,
+                                                                               self.METAMODEL_ID,
+                                                                               '?content=true'))
 
         query = {'query': 'test'}
         path = requester.request_path(METAMODELS, account_id=self.ACCOUNT_ID, query=query)
@@ -161,7 +162,7 @@ class TestEvolvRequest(unittest.TestCase):
         response = requester.query(METAMODELS)
         self.assertEqual(response, {'test': 1})
 
-        response = requester.query(METAMODELS, 'test')
+        response = requester.query(METAMODELS, {'query': 'test'})
         self.assertEqual(response, {'test': 1})
 
     @patch('evolvclient.request.requests.get', side_effect=mocked_request_bad_response)
