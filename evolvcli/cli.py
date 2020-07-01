@@ -41,8 +41,10 @@ def cli(domain, account_id, api_key, login):
     if (login or not _user_has_auth()) and not api_key:
         username = click.prompt("Please enter your Evolv email", type=str)
         password = click.prompt("Please enter your Evolv password", type=str, hide_input=True)
+        mfa_token = click.prompt("Please enter your MFA device token (enter nothing if not needed)", type=str,
+                                 default="", show_default=False)
         try:
-            _set_user_token(domain, username, password)
+            _set_user_token(domain, username, password, mfa_token)
         except LoginError:
             click.secho('Attempt to login failed -- you may have entered your email or password wrong.')
             sys.exit(1)
@@ -471,11 +473,13 @@ def _find_creds_files(pattern, path):
     return result
 
 
-def _set_user_token(domain, username, password):
+def _set_user_token(domain, username, password, mfa_token):
     try:
         username_password = base64.b64encode((username + ':' + password).encode()).decode()
+        params = {'mfa': mfa_token} if mfa_token else {}
         response = requests.get('https://{}/v1/login'.format(domain),
-                                headers={'Authorization': 'Basic {}'.format(username_password)})
+                                headers={'Authorization': 'Basic {}'.format(username_password)},
+                                params=params)
 
         if not response.ok:
             raise Exception("Response to login user failed.")

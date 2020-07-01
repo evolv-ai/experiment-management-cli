@@ -71,7 +71,9 @@ class EvolvRequest:
             url += '/{}'.format(entity_id)
 
         if content_only:
-            url += '/content'
+            if query is None:
+                query = {}
+            query['content'] = 'true'
 
         if query:
             url += '?{}'.format(parse.urlencode(query))
